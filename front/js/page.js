@@ -43,7 +43,7 @@ function addTxt(value) {
   }
 }
 
-//gestion panier
+//----------------------------------------------gestion panier
 
 //selection id des options
 const opt = document.getElementById("colors");
@@ -75,5 +75,23 @@ function addOptionProduit(value) {
       price: value.price,
     };
     console.log(optionProduit);
+    //------------------------------------------gestion du localStorage
+
+    //variable pour mettre les clés des articles
+    let produitLocalStorage = JSON.parse(localStorage.getItem("produit"));
+    console.log(produitLocalStorage);
+
+    //verifier si il y a deja quelquechose dans le localstorage
+
+    if (produitLocalStorage) {
+      produitLocalStorage.push(optionProduit);
+      localStorage.setItem("produit", JSON.stringify(produitLocalStorage));
+      console.log(produitLocalStorage);
+    } else {
+      produitLocalStorage = [];
+      produitLocalStorage.push(optionProduit);
+      localStorage.setItem("produit", JSON.stringify(produitLocalStorage));
+      console.log(produitLocalStorage);
+    }
   });
 }
