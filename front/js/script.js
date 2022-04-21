@@ -1,5 +1,7 @@
 const url = "http://localhost:3000/api/products";
 
+//recuperation des produits dans le back
+
 const promise = fetch(url)
   .then(function (res) {
     if (res.ok) {
@@ -15,6 +17,8 @@ const promise = fetch(url)
     console.log(err);
   });
 
+//boucle pour afficher tous les produits sur la page
+
 function drawProducts(products) {
   console.log(products);
   products.forEach((product) => {
@@ -22,6 +26,8 @@ function drawProducts(products) {
     addCard(product);
   });
 }
+
+// injection html dans la page acceuil
 
 function addCard(product) {
   document.getElementById("items").innerHTML += `
