@@ -10,88 +10,100 @@ const id = idSearchParams.get("id");
 //console.log(id);
 
 // affichage du produit grace a l'id de l'url
-fetch(`http://localhost:3000/api/products/${id}`)
-  .then(function (res) {
-    if (res.ok) {
-      return res.json();
-    }
-  })
-  .then(function (value) {
-    //console.log(value);
-    addTxt(value);
-    addOptionProduit(value);
-  })
+async function getproduct() {
+  let response = await fetch(`http://localhost:3000/api/products/${id}`);
+  //console.log(response);
+  let product = await response.json();
+  //console.log(product);
 
-  .catch(function (err) {
-    console.log(err);
-  });
+  addTxt(product);
+
+  addOptionProduit(product);
+}
+getproduct();
 
 //injection html dans la page produit
-function addTxt(value) {
-  document.querySelector(".item__img").innerHTML += `<img src="${value.imageUrl}" alt="${value.altTxt}">`;
-  document.getElementById("title").innerHTML += `${value.name}`;
-  document.getElementById("price").innerHTML += `${value.price}`;
-  document.getElementById("description").innerHTML += `${value.description}`;
+function addTxt(product) {
+  document.querySelector(".item__img").innerHTML += `<img src="${product.imageUrl}" alt="${product.altTxt}">`;
+  document.getElementById("title").innerHTML += `${product.name}`;
+  document.getElementById("price").innerHTML += `${product.price}`;
+  document.getElementById("description").innerHTML += `${product.description}`;
 
-  const options = value.colors;
+  const options = product.colors;
 
   //boucle pour ajouter le bon nombre d'options
-
   for (let i = 0; i < options.length; i++) {
-    document.getElementById("colors").innerHTML += `<option value ="${value.colors[i]}">${value.colors[i]}</option>`;
-    //console.log(value.colors);
+    document.getElementById(
+      "colors"
+    ).innerHTML += `<option product ="${product.colors[i]}">${product.colors[i]}</option>`;
+    //console.log(product.colors);
   }
 }
-
-//----------------------------------------------gestion panier
+//----------------------------------------------gestion panier-----------------------------------------
 
 //selection id des options
 const opt = document.getElementById("colors");
-console.log(opt);
+//console.log(opt);
 
 //selection quantité
 const quantite = document.getElementById("quantity");
-console.log(quantite);
+//console.log(quantite);
 
 // selection bouton ajouter au panier
 const btnAddPanier = document.getElementById("addToCart");
-console.log(btnAddPanier);
+//console.log(btnAddPanier);
 
 //ecouter le btn et envoyer dans le panier
-function addOptionProduit(value) {
+function addOptionProduit(product) {
   btnAddPanier.addEventListener("click", (e) => {
     e.preventDefault();
 
     // choix du client
     const choixClient = opt.value;
-    console.log(opt.value);
+    //console.log(opt.value);
 
     //recuperation des valeurs produit
-    let optionProduit = {
-      _id: value._id,
-      name: value.name,
+    let optionProduct = {
+      _id: product._id,
+      name: product.name,
       colors: choixClient,
       quantite: quantite.value,
-      price: value.price,
+      price: product.price,
     };
-    console.log(optionProduit);
-    //------------------------------------------gestion du localStorage
+    console.log(optionProduct);
+    //------------------------------------------gestion du localStorage--------------------------------------
+
+    //ajouter un produit dans le local storage
+    function pushLocalStorage() {
+      // isTheSame();
+      products.push(optionProduct);
+      localStorage.setItem("product", JSON.stringify(products));
+      //console.log(products);
+    }
 
     //variable pour mettre les clés des articles
-    let produitLocalStorage = JSON.parse(localStorage.getItem("produit"));
-    console.log(produitLocalStorage);
+    let products = JSON.parse(localStorage.getItem("product"));
+    //console.log(products);
 
     //verifier si il y a deja quelquechose dans le localstorage
-
-    if (produitLocalStorage) {
-      produitLocalStorage.push(optionProduit);
-      localStorage.setItem("produit", JSON.stringify(produitLocalStorage));
-      console.log(produitLocalStorage);
+    if (products) {
+      //si local storage deja rempli
+      pushLocalStorage();
     } else {
-      produitLocalStorage = [];
-      produitLocalStorage.push(optionProduit);
-      localStorage.setItem("produit", JSON.stringify(produitLocalStorage));
-      console.log(produitLocalStorage);
+      //si local storage vide
+      products = [];
+      pushLocalStorage();
     }
+    // function isTheSame() {
+    //   products.forEach((product) => {
+    //     if (optionProduct.colors === product.colors) {
+    //       console.log(true);
+    //     } else {
+    //       console.log(false);
+    //       Storage.removeItem();
+    //     }
+    // });
+    // }
+    // console.log(products);
   });
 }
