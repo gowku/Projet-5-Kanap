@@ -47,7 +47,7 @@ const opt = document.getElementById("colors");
 
 //selection quantité
 const quantite = document.getElementById("quantity");
-//console.log(quantite);
+console.log(quantite);
 
 // selection bouton ajouter au panier
 const btnAddPanier = document.getElementById("addToCart");
@@ -61,49 +61,91 @@ function addOptionProduit(product) {
     // choix du client
     const choixClient = opt.value;
     //console.log(opt.value);
+    const quantity = parseInt(quantite.value, 10);
+    //console.log(quantity);
+
+    if (quantity <= 0 || quantity > 100) {
+      alert("Quantité incorrect");
+      return;
+    }
 
     //recuperation des valeurs produit
     let optionProduct = {
       _id: product._id,
       name: product.name,
       colors: choixClient,
-      quantite: quantite.value,
-      price: product.price,
+      quantite: quantity,
     };
-    console.log(optionProduct);
+    //console.log(optionProduct);
     //------------------------------------------gestion du localStorage--------------------------------------
 
-    //ajouter un produit dans le local storage
-    function pushLocalStorage() {
-      // isTheSame();
-      products.push(optionProduct);
-      localStorage.setItem("product", JSON.stringify(products));
-      //console.log(products);
+    function getBasket() {
+      let basket = localStorage.getItem("basket");
+      //console.log(basket);
+      if (basket == null) {
+        return [];
+      } else {
+        return JSON.parse(basket);
+      }
     }
 
-    //variable pour mettre les clés des articles
-    let products = JSON.parse(localStorage.getItem("product"));
-    //console.log(products);
-
-    //verifier si il y a deja quelquechose dans le localstorage
-    if (products) {
-      //si local storage deja rempli
-      pushLocalStorage();
-    } else {
-      //si local storage vide
-      products = [];
-      pushLocalStorage();
+    function saveBasket(basket) {
+      localStorage.setItem("basket", JSON.stringify(basket));
     }
-    // function isTheSame() {
-    //   products.forEach((product) => {
-    //     if (optionProduct.colors === product.colors) {
-    //       console.log(true);
-    //     } else {
-    //       console.log(false);
-    //       Storage.removeItem();
-    //     }
-    // });
-    // }
-    // console.log(products);
+
+    function addBasket(optionProduct) {
+      let basket = getBasket();
+      // console.log(basket, optionProduct);
+      let foundProduct = basket.find(
+        (product) => optionProduct._id == product._id && optionProduct.colors == product.colors
+      );
+      //console.log(product.colors);
+      if (foundProduct) {
+        //si foundProduct n'est pas nul
+        console.log(foundProduct);
+        foundProduct.quantite += parseInt(quantite.value, 10);
+      } else {
+        basket.push(optionProduct);
+      }
+      saveBasket(basket);
+    }
+    addBasket(optionProduct);
+
+    function removeFromBasket(optionProduct) {
+      let basket = getBasket();
+      basket = basket.filter((optionProduct) => optionProduct.id != product.id);
+      saveBasket(basket);
+    }
+
+    function changeQuantity(optionProduct, quantite) {
+      let basket = getBasket();
+      let foundProduct = basket.find((optionProduct) => optionProduct.id == product.id);
+      if (foundProduct != undefined) {
+        foundProduct.quantite += quantite;
+        if (foundProduct.quantity <= 0) {
+          removeFromBasket(foundProduct);
+        } else {
+          saveBasket(basket);
+        }
+      }
+    }
+
+    function getNumberProduct(optionProduct) {
+      let basket = getBasket();
+      let number = 0;
+      for (let optionProduct of basket) {
+        number += optionProduct.quantity;
+      }
+      return number;
+    }
+
+    function getTotalPrice() {
+      let basket = getBasket();
+      let total = 0;
+      for (let optionProduct of basket) {
+        total += optionProduct.quantity * optionProduct.price;
+      }
+      return total;
+    }
   });
 }
