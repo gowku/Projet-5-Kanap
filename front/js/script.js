@@ -2,7 +2,7 @@
 async function getproducts() {
   let response = await fetch("http://localhost:3000/api/products");
   let products = await response.json();
-  console.log(products);
+  //console.log(products);
 
   drawProducts(products);
 }
