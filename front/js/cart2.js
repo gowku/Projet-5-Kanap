@@ -15,6 +15,8 @@ async function getProducts() {
 
   changeQuantity(quantityInputs, produitLocalStorages);
 
+  // getKanapId(kanaps);
+
   deleteItem(deleteBtns, produitLocalStorages);
 
   totalQuantiteArticles(produitLocalStorages);
@@ -108,18 +110,54 @@ function changeQuantity(quantityInputs, produitLocalStorages) {
 // ---------------------------------gestion suppression element ----------------------------------------------
 
 let deleteBtns = document.getElementsByClassName("deleteItem");
-console.log(deleteBtns);
+// console.log(deleteBtns);
+let kanaps = document.getElementsByClassName("cart__item");
+// let idcolorKanaps = [];
+// function getKanapId(kanaps) {
+//   for (let m = 0; m < kanaps.length; m++) {
+//     // console.log(kanaps[m].dataset.id);
+//     // console.log(kanaps[m].dataset.color);
 
-function deleteItem(deleteBtns, produitLocalStorages) {
+//     // idKanaps += kanaps[m].dataset.id + ",";
+//     idcolorKanaps.push({
+//       id: kanaps[m].dataset.id,
+//       color: kanaps[m].dataset.color,
+//     });
+//   }
+// }
+// console.log(idcolorKanaps);
+
+function deleteItem(deleteBtns, produitLocalStorages, idcolorKanaps) {
   for (let j = 0; j < deleteBtns.length; j++) {
     deleteBtns[j].addEventListener("click", (e) => {
       e.preventDefault();
       console.log(deleteBtns[j]);
+      let closestKanap = [];
+      let idcolorKanap = deleteBtns[j].closest(".cart__item");
+      closestKanap.push({
+        id: idcolorKanap.dataset.id,
+        color: idcolorKanap.dataset.color,
+      });
 
-      // produitLocalStorages.splice(produitLocalStorages[j], 1);
+      console.log(closestKanap);
+      for (let m = 0; m < closestKanap.length; m++) {
+        console.log(closestKanap[m].id);
+      }
 
-      // localStorage.setItem("basket", JSON.stringify(produitLocalStorages));
-      // console.log(produitLocalStorages);
+      // console.log(idcolorKanaps[j].color);
+      // console.log(produitLocalStorages[j].colors);
+
+      // produitLocalStorages.map((produitLocalStorage) => {
+      //   idcolorKanaps.forEach((idcolorKanap) => {
+      //     if (produitLocalStorage._id == idcolorKanap.id && produitLocalStorage.colors == idcolorKanap.color) {
+      //       // console.log(true);
+      //       produitLocalStorages.splice(produitLocalStorage, 1);
+
+      //       localStorage.setItem("basket", JSON.stringify(produitLocalStorages));
+      //     }
+      //     console.log(produitLocalStorages);
+      //   });
+      // });
     });
   }
 }
