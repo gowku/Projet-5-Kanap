@@ -114,10 +114,12 @@ function deleteItem(deleteBtns, produitLocalStorages) {
   for (let j = 0; j < deleteBtns.length; j++) {
     deleteBtns[j].addEventListener("click", (e) => {
       e.preventDefault();
-      console.log(produitLocalStorages);
-      // produitLocalStorages -= produitLocalStorages[j];
-      console.log(localStorage.removeItem(object[j]));
-      // localStorage.removeItem([j]);
+      console.log(deleteBtns[j]);
+
+      // produitLocalStorages.splice(produitLocalStorages[j], 1);
+
+      // localStorage.setItem("basket", JSON.stringify(produitLocalStorages));
+      // console.log(produitLocalStorages);
     });
   }
 }
@@ -131,17 +133,21 @@ let totalP = 0;
 function totalQuantiteArticles(produitLocalStorages) {
   //console.log(produitLocalStorages);
   for (let k = 0; k < produitLocalStorages.length; k++) {
-    totalQ += parseInt(produitLocalStorages[k].quantite);
+    totalQ += produitLocalStorages[k].quantite;
   }
   totalQuantity.innerHTML = totalQ;
   //console.log(totalQ);
 }
 
 function totalPriceArticle(products, produitLocalStorages) {
-  for (let k = 0; k < produitLocalStorages.length; k++) {
-    for (let l = 0; l < products.length; l++) {}
-    totalP += produitLocalStorages[k].quantite * products[k].price;
-  }
+  produitLocalStorages.map((produitLocalStorage) => {
+    products.forEach((product) => {
+      if (product._id == produitLocalStorage._id) {
+        totalP += produitLocalStorage.quantite * product.price;
+      }
+    });
+    // console.log(totalP);
+  });
   totalPrice.innerHTML = totalP;
 }
 
@@ -159,64 +165,29 @@ function addContact() {
   btnCommander.addEventListener("click", (e) => {
     e.preventDefault();
     let masqueNomPrenomVille = /^[A-Za-z-]{3,30}$/;
-    let masqueAdresse = /^[A-Za-z0-9-|\s]{3,30}$/;
+    let masqueAdresse = /^[0-9|/s]+[A-Za-z-|\s]{3,30}$/;
     let masqueMail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    let masques = [masqueNomPrenomVille, masqueAdresse, masqueMail];
-    //console.log(masques);
 
     const textAlert = (value) => {
       return `${value}: erreur ,verifier vos informations`;
     };
 
-    // const checkInput = (value ,...masques) => {
-    //   if (${masques}.test(${value}.value)) {
-    //     console.log(${value}.value + " prenom valide");
-    //   } else {
-    //     // console.log(prenom.value + " prenom invalide");
-    //     alert(textAlert("${value}"));
-    //   }
-    // }
-    // checkInput(prenom,[0]);
-
     //verification des inputs du formulaire
     function checkInputs() {
       if (!masqueNomPrenomVille.test(prenom.value)) {
-        alert(textAlert("prenom"));
+        alert(textAlert("prenom invalide"));
       }
-
-      if (masqueNomPrenomVille.test(prenom.value)) {
-        console.log(prenom.value + " prenom valide");
-      } else {
-        // console.log(prenom.value + " prenom invalide");
-        alert(textAlert("prenom"));
+      if (!masqueNomPrenomVille.test(nom.value)) {
+        alert(textAlert(" nom invalide"));
       }
-
-      if (masqueNomPrenomVille.test(nom.value)) {
-        console.log(nom.value + " nom valide");
-      } else {
-        // console.log(nom.value + " nom invalide");
-        alert(textAlert("nom"));
+      if (!masqueAdresse.test(adresse.value)) {
+        alert(textAlert("adresse non valide"));
       }
-
-      if (masqueAdresse.test(adresse.value)) {
-        console.log(adresse.value + " adresse valide");
-      } else {
-        // console.log(adresse.value + " adresse invalide");
-        alert(textAlert("adresse"));
+      if (!masqueNomPrenomVille.test(ville.value)) {
+        alert(textAlert("ville non valide"));
       }
-
-      if (masqueNomPrenomVille.test(ville.value)) {
-        console.log(ville.value + " ville valide");
-      } else {
-        // console.log(ville.value + " ville invalide");
-        alert(textAlert("ville"));
-      }
-
-      if (masqueMail.test(email.value)) {
-        console.log(email.value + " adresse mail valide");
-      } else {
-        // console.log(nom.value + " adresse mail invalide");
-        alert(textAlert("email"));
+      if (!masqueMail.test(email.value)) {
+        alert(textAlert("mail non valide"));
       }
     }
     checkInputs();
