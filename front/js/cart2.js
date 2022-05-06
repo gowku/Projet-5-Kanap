@@ -22,6 +22,7 @@ async function getProducts() {
   totalQuantiteArticles(produitLocalStorages);
 
   totalPriceArticle(products, produitLocalStorages);
+  console.log(produitLocalStorages);
 }
 getProducts();
 
@@ -112,57 +113,31 @@ function changeQuantity(quantityInputs, produitLocalStorages) {
 let deleteBtns = document.getElementsByClassName("deleteItem");
 // console.log(deleteBtns);
 let kanaps = document.getElementsByClassName("cart__item");
-// let idcolorKanaps = [];
-// function getKanapId(kanaps) {
-//   for (let m = 0; m < kanaps.length; m++) {
-//     // console.log(kanaps[m].dataset.id);
-//     // console.log(kanaps[m].dataset.color);
-
-//     // idKanaps += kanaps[m].dataset.id + ",";
-//     idcolorKanaps.push({
-//       id: kanaps[m].dataset.id,
-//       color: kanaps[m].dataset.color,
-//     });
-//   }
-// }
-// console.log(idcolorKanaps);
 
 function deleteItem(deleteBtns, produitLocalStorages, idcolorKanaps) {
   for (let j = 0; j < deleteBtns.length; j++) {
     deleteBtns[j].addEventListener("click", (e) => {
       e.preventDefault();
       console.log(deleteBtns[j]);
-      let closestKanap = [];
-      let idcolorKanap = deleteBtns[j].closest(".cart__item");
-      closestKanap.push({
-        id: idcolorKanap.dataset.id,
-        color: idcolorKanap.dataset.color,
+
+      let idcolorKanaps = deleteBtns[j].closest(".cart__item");
+      console.log(idcolorKanaps);
+      console.log(idcolorKanaps.dataset.id);
+
+      newProduitLocalStorage = [];
+      newProduitLocalStorage = produitLocalStorages.filter((product) => {
+        if (product._id !== idcolorKanaps.dataset.id || product.colors !== idcolorKanaps.dataset.color) {
+          console.log(product);
+          return product;
+        }
       });
-
-      console.log(closestKanap);
-      for (let m = 0; m < closestKanap.length; m++) {
-        console.log(closestKanap[m].id);
-      }
-
-      // console.log(idcolorKanaps[j].color);
-      // console.log(produitLocalStorages[j].colors);
-
-      // produitLocalStorages.map((produitLocalStorage) => {
-      //   idcolorKanaps.forEach((idcolorKanap) => {
-      //     if (produitLocalStorage._id == idcolorKanap.id && produitLocalStorage.colors == idcolorKanap.color) {
-      //       // console.log(true);
-      //       produitLocalStorages.splice(produitLocalStorage, 1);
-
-      //       localStorage.setItem("basket", JSON.stringify(produitLocalStorages));
-      //     }
-      //     console.log(produitLocalStorages);
-      //   });
-      // });
+      localStorage.setItem("basket", JSON.stringify(newProduitLocalStorage));
+      console.log(newProduitLocalStorage);
     });
   }
 }
 
-//------------------------------------------gestion prix total--------------------------------------------------
+//------------------------------------------gestion quantite et prix total--------------------------------------------------
 
 const totalQuantity = document.getElementById("totalQuantity");
 const totalPrice = document.getElementById("totalPrice");
@@ -231,23 +206,13 @@ function addContact() {
     checkInputs();
 
     let contact = {
-      prenom: prenom.value,
-      nom: nom.value,
-      adresse: adresse.value,
-      ville: ville.value,
+      firstName: prenom.value,
+      lastName: nom.value,
+      adress: adresse.value,
+      city: ville.value,
       email: email.value,
     };
     console.log(contact);
   });
 }
 addContact();
-
-// let idsLocalStorage = new Array();
-// let quantitesLocalStorage = new Array();
-// for (let i = 0; i < produitLocalStorage.length; i++) {
-//   idsLocalStorage.push(produitLocalStorage[i]._id);
-//   quantitesLocalStorage.push(produitLocalStorage[i].quantite);
-
-// console.log(idsLocalStorage);
-// console.log(quantitesLocalStorage);
-// }
