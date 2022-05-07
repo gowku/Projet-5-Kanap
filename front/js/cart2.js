@@ -174,45 +174,73 @@ let email = document.getElementById("email");
 let btnCommander = document.getElementById("order");
 
 //fonction pour ajouter les infos du formulaire
-function addContact() {
+function sendOrder(produitLocalStorages) {
   btnCommander.addEventListener("click", (e) => {
     e.preventDefault();
-    let masqueNomPrenomVille = /^[A-Za-z-]{3,30}$/;
-    let masqueAdresse = /^[0-9|/s]+[A-Za-z-|\s]{3,30}$/;
-    let masqueMail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-    const textAlert = (value) => {
-      return `${value}: erreur ,verifier vos informations`;
-    };
-
-    //verification des inputs du formulaire
-    function checkInputs() {
-      if (!masqueNomPrenomVille.test(prenom.value)) {
-        alert(textAlert("prenom invalide"));
-      }
-      if (!masqueNomPrenomVille.test(nom.value)) {
-        alert(textAlert(" nom invalide"));
-      }
-      if (!masqueAdresse.test(adresse.value)) {
-        alert(textAlert("adresse non valide"));
-      }
-      if (!masqueNomPrenomVille.test(ville.value)) {
-        alert(textAlert("ville non valide"));
-      }
-      if (!masqueMail.test(email.value)) {
-        alert(textAlert("mail non valide"));
-      }
-    }
     checkInputs();
 
-    let contact = {
-      firstName: prenom.value,
-      lastName: nom.value,
-      adress: adresse.value,
-      city: ville.value,
-      email: email.value,
+    let basket = [];
+    for (produitLocalStorage of produitLocalStorages) {
+      // console.log(produitLocalStorage);
+      basket.push(produitLocalStorage._id);
+    }
+
+    let order = {
+      contact: {
+        firstName: prenom.value,
+        lastName: nom.value,
+        address: adresse.value,
+        city: ville.value,
+        email: email.value,
+      },
+      products: basket,
     };
-    console.log(contact);
+    //console.log(order);
+    console.log(JSON.stringify(order.products[1]));
+
+    sendToBack(order);
   });
 }
-addContact();
+sendOrder(produitLocalStorages);
+
+//verification des inputs du formulaire
+function checkInputs() {
+  let masqueNomPrenomVille = /^[A-Za-z-]{3,30}$/;
+  let masqueAdresse = /^[0-9|/s]+[A-Za-z-|\s]{3,30}$/;
+  let masqueMail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+  const textAlert = (value) => {
+    return `${value}: erreur ,verifier vos informations`;
+  };
+
+  if (!masqueNomPrenomVille.test(prenom.value)) {
+    alert(textAlert("prenom invalide"));
+  }
+  if (!masqueNomPrenomVille.test(nom.value)) {
+    alert(textAlert("nom invalide"));
+  }
+  if (!masqueAdresse.test(adresse.value)) {
+    alert(textAlert("adresse non valide"));
+  }
+  if (!masqueNomPrenomVille.test(ville.value)) {
+    alert(textAlert("ville non valide"));
+  }
+  if (!masqueMail.test(email.value)) {
+    alert(textAlert("mail non valide"));
+  }
+}
+
+function sendToBack(order) {
+  const promise1 = fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(order),
+  });
+  console.log(promise1);
+  // .then((response) => response.json())
+  // .catch((err) => console.log(err));
+  // console.log(response)
+}
