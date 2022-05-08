@@ -6,7 +6,7 @@ let produitLocalStorages = JSON.parse(localStorage.getItem("basket"));
 async function getProducts() {
   let response = await fetch("http://localhost:3000/api/products");
   let products = await response.json();
-
+  console.log(panierProducts);
   //recuperation des infos des kanap dans le back grace a la comparaison du local storage et du back
   let tableauComplet = findCorrespondingProducts(products, produitLocalStorages);
   // console.log(tableauComplet);
@@ -22,7 +22,6 @@ async function getProducts() {
   totalQuantiteArticles(produitLocalStorages);
 
   totalPriceArticle(products, produitLocalStorages);
-  console.log(produitLocalStorages);
 }
 getProducts();
 
@@ -197,7 +196,7 @@ function sendOrder(produitLocalStorages) {
       products: basket,
     };
     //console.log(order);
-    console.log(JSON.stringify(order.products[1]));
+    //console.log(JSON.stringify(order.products[1]));
 
     sendToBack(order);
   });
@@ -231,16 +230,23 @@ function checkInputs() {
   }
 }
 
-function sendToBack(order) {
-  const promise1 = fetch("http://localhost:3000/api/products/order", {
+async function sendToBack(order) {
+  const promise1 = await fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(order),
-  });
-  console.log(promise1);
-  // .then((response) => response.json())
-  // .catch((err) => console.log(err));
-  // console.log(response)
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+    .then(function (data) {
+      console.log(data);
+      // localStorage.clear();
+
+      document.location.href = "confirmation.html?id=" + data.orderId;
+    });
 }
