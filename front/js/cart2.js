@@ -6,7 +6,10 @@ let produitLocalStorages = JSON.parse(localStorage.getItem("basket"));
 async function getProducts() {
   let response = await fetch("http://localhost:3000/api/products");
   let products = await response.json();
-  console.log(panierProducts);
+
+  totalPriceArticle(products, produitLocalStorages);
+  totalQuantiteArticles(produitLocalStorages);
+
   //recuperation des infos des kanap dans le back grace a la comparaison du local storage et du back
   let tableauComplet = findCorrespondingProducts(products, produitLocalStorages);
   // console.log(tableauComplet);
@@ -18,10 +21,6 @@ async function getProducts() {
   // getKanapId(kanaps);
 
   deleteItem(deleteBtns, produitLocalStorages);
-
-  totalQuantiteArticles(produitLocalStorages);
-
-  totalPriceArticle(products, produitLocalStorages);
 }
 getProducts();
 
@@ -117,21 +116,25 @@ function deleteItem(deleteBtns, produitLocalStorages, idcolorKanaps) {
   for (let j = 0; j < deleteBtns.length; j++) {
     deleteBtns[j].addEventListener("click", (e) => {
       e.preventDefault();
-      console.log(deleteBtns[j]);
+      //console.log(deleteBtns[j]);
+      let confirm2 = window.confirm("etes vous sûre de vouloir supprimer l'article ?");
 
-      let idcolorKanaps = deleteBtns[j].closest(".cart__item");
-      console.log(idcolorKanaps);
-      console.log(idcolorKanaps.dataset.id);
+      if (confirm2) {
+        let idcolorKanaps = deleteBtns[j].closest(".cart__item");
+        console.log(idcolorKanaps);
+        console.log(idcolorKanaps.dataset.id);
 
-      newProduitLocalStorage = [];
-      newProduitLocalStorage = produitLocalStorages.filter((product) => {
-        if (product._id !== idcolorKanaps.dataset.id || product.colors !== idcolorKanaps.dataset.color) {
-          console.log(product);
-          return product;
-        }
-      });
-      localStorage.setItem("basket", JSON.stringify(newProduitLocalStorage));
-      console.log(newProduitLocalStorage);
+        newProduitLocalStorage = [];
+        newProduitLocalStorage = produitLocalStorages.filter((product) => {
+          if (product._id !== idcolorKanaps.dataset.id || product.colors !== idcolorKanaps.dataset.color) {
+            console.log(product);
+            return product;
+          }
+        });
+        localStorage.setItem("basket", JSON.stringify(newProduitLocalStorage));
+        console.log(newProduitLocalStorage);
+        location.reload();
+      }
     });
   }
 }
@@ -143,24 +146,31 @@ const totalPrice = document.getElementById("totalPrice");
 let totalQ = 0;
 let totalP = 0;
 function totalQuantiteArticles(produitLocalStorages) {
-  //console.log(produitLocalStorages);
-  for (let k = 0; k < produitLocalStorages.length; k++) {
-    totalQ += produitLocalStorages[k].quantite;
+  if (produitLocalStorages == null) {
+    totalQuantity.textContent = `0`;
+  } else {
+    for (let k = 0; k < produitLocalStorages.length; k++) {
+      totalQ += produitLocalStorages[k].quantite;
+    }
+    totalQuantity.textContent = totalQ;
   }
-  totalQuantity.innerHTML = totalQ;
   //console.log(totalQ);
 }
 
 function totalPriceArticle(products, produitLocalStorages) {
-  produitLocalStorages.map((produitLocalStorage) => {
-    products.forEach((product) => {
-      if (product._id == produitLocalStorage._id) {
-        totalP += produitLocalStorage.quantite * product.price;
-      }
+  if (produitLocalStorages == null) {
+    totalPrice.textContent = `0`;
+  } else {
+    produitLocalStorages.map((produitLocalStorage) => {
+      products.forEach((product) => {
+        if (product._id == produitLocalStorage._id) {
+          totalP += produitLocalStorage.quantite * product.price;
+        }
+      });
+      // console.log(totalP);
     });
-    // console.log(totalP);
-  });
-  totalPrice.innerHTML = totalP;
+    totalPrice.textContent = totalP;
+  }
 }
 
 //-------------------------------------------GESTION DU FORMULAIRE----------------------------------------------
@@ -176,29 +186,33 @@ let btnCommander = document.getElementById("order");
 function sendOrder(produitLocalStorages) {
   btnCommander.addEventListener("click", (e) => {
     e.preventDefault();
+    if (!produitLocalStorages) {
+      console.log(true);
+      window.alert("Votre panier est vide !");
+    } else {
+      checkInputs();
 
-    checkInputs();
+      let basket = [];
+      for (produitLocalStorage of produitLocalStorages) {
+        // console.log(produitLocalStorage);
+        basket.push(produitLocalStorage._id);
+      }
 
-    let basket = [];
-    for (produitLocalStorage of produitLocalStorages) {
-      // console.log(produitLocalStorage);
-      basket.push(produitLocalStorage._id);
+      let order = {
+        contact: {
+          firstName: prenom.value,
+          lastName: nom.value,
+          address: adresse.value,
+          city: ville.value,
+          email: email.value,
+        },
+        products: basket,
+      };
+      //console.log(order);
+      //console.log(JSON.stringify(order.products[1]));
+
+      sendToBack(order);
     }
-
-    let order = {
-      contact: {
-        firstName: prenom.value,
-        lastName: nom.value,
-        address: adresse.value,
-        city: ville.value,
-        email: email.value,
-      },
-      products: basket,
-    };
-    //console.log(order);
-    //console.log(JSON.stringify(order.products[1]));
-
-    sendToBack(order);
   });
 }
 sendOrder(produitLocalStorages);
@@ -240,12 +254,13 @@ async function sendToBack(order) {
   })
     .then((res) => {
       if (res.ok) {
+        // console.log(res.json());
         return res.json();
       }
     })
     .then(function (data) {
       console.log(data);
-      // localStorage.clear();
+      localStorage.clear();
 
       document.location.href = "confirmation.html?id=" + data.orderId;
     });
