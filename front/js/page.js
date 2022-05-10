@@ -59,6 +59,10 @@ function addOptionProduit(product) {
 
     // choix du client
     const choixClient = opt.value;
+    if (!choixClient) {
+      window.alert("Veuillez choisir une couleur !");
+      return;
+    }
     //console.log(opt.value);
     const quantity = parseInt(quantite.value, 10);
     //console.log(quantity);

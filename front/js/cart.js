@@ -18,8 +18,6 @@ async function getProducts() {
 
   changeQuantity(quantityInputs, produitLocalStorages);
 
-  // getKanapId(kanaps);
-
   deleteItem(deleteBtns, produitLocalStorages);
 }
 getProducts();
@@ -44,11 +42,6 @@ function findCorrespondingProducts(products, produitLocalStorages) {
   });
   return panierProducts;
   //console.log(panierProducts);
-
-  // for(let i=0;i<l.length;i++){
-  //   pr._id  == l[i]._id ?
-  //   ar1.push({ _id: pr._id, altTxt: pr.altTxt, colors: l[i].colors, imageUrl: pr.imageUrl, name: l[i].name, price: pr.price, quantite: l[i].quantite }) : ""};
-  // })
 }
 
 //boucle pour afficher tous les produits sur la page
@@ -101,6 +94,7 @@ function changeQuantity(quantityInputs, produitLocalStorages) {
 
       //console.log(produitLocalStorages[i].quantite);
       localStorage.setItem("basket", JSON.stringify(produitLocalStorages));
+      location.reload();
       //console.log(produitLocalStorages);
     });
   }

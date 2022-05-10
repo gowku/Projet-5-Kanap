@@ -1,4 +1,4 @@
-//recuperation des produits dans le back
+//recuperation des produits dans le back et affichage sur la page
 async function getproducts() {
   let response = await fetch("http://localhost:3000/api/products");
   let products = await response.json();
